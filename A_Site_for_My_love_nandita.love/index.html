@@ -1,0 +1,343 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will You Be My Valentine? ❤️</title>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        /* Google Font Import: Source Serif 4 (The 'Sree' Serif look) */
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap');
+
+        :root {
+            /* Dark Attractive Valentine Theme Colors */
+            --bg: #0f0104; 
+            --card: #1a0a0d; 
+            --primary: #ff4d6d; 
+            --secondary: #ff758f; 
+            --accent: #ffb3c1; 
+            --text: #ffe5ec; 
+            --glass: rgba(26, 10, 13, 0.9);
+            --border: #4a0e1c; 
+        }
+
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            /* Changed to Source Serif 4 */
+            font-family: 'Source Serif 4', serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 20% 30%, #4a0e1c 0%, transparent 40%),
+                              radial-gradient(circle at 80% 70%, #2d0812 0%, transparent 40%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-y: auto; 
+            padding: 40px 0;
+        }
+
+        .container {
+            background: var(--glass);
+            width: 90%;
+            max-width: 550px;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            margin: auto;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .page { display: none; }
+        .page.active { display: block; animation: heartFade 0.6s ease forwards; }
+
+        @keyframes heartFade {
+            from { opacity: 0; transform: scale(0.9) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* HEADING FONT CHANGED TO SOURCE SERIF 4 */
+        h1 { 
+            font-family: 'Source Serif 4', serif; 
+            font-weight: 700; 
+            font-size: 2.4rem; 
+            color: var(--primary); 
+            margin-bottom: 20px; 
+            text-shadow: 0 0 15px rgba(255, 77, 109, 0.3); 
+            letter-spacing: -0.5px;
+        }
+        
+        p { font-size: 1.1rem; line-height: 1.6; color: var(--text); margin-bottom: 20px; opacity: 0.9; }
+
+        /* BUTTONS */
+        .btn-wrap {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 40px;
+            min-height: 150px;
+        }
+
+        button {
+            padding: 14px 32px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Source Serif 4', serif; /* Font updated here too */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #yesBtn { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; font-size: 1.2rem; z-index: 10; position: relative; }
+        #noBtn { background: #2d0812; color: var(--primary); z-index: 5; position: relative; border: 1px solid var(--primary); }
+
+        .nav-btn { 
+            background: transparent; 
+            border: 2px solid var(--primary); 
+            color: var(--primary); 
+            margin-top: 25px; 
+            width: 100%; 
+            font-size: 1rem;
+        }
+        .nav-btn:hover { background: var(--primary); color: white; transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4); }
+
+        /* MEMORIES GRID */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        .flip-card { aspect-ratio: 1/1; perspective: 1000px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+        .flip-card-front { background: #1a0a0d; color: var(--primary); font-size: 2rem; font-family: 'Dancing Script', cursive; }
+        .flip-card-back { transform: rotateY(180deg); background: #000; overflow: hidden; }
+        .flip-card-back img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* SLIDING PUZZLE */
+        #puzzle-board { width: 300px; height: 300px; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 5px; margin: 20px auto; background: var(--border); padding: 5px; border-radius: 12px; }
+        .puzzle-tile { width: 93px; height: 93px; background-image:url("https://statutory-turquoise-wvarfxzrvw.edgeone.app/Picsart_26-02-06_02-27-04-191.png") ; background-size: 300px 300px; cursor: pointer; border-radius: 8px; }
+        .puzzle-tile.empty { background: var(--bg); border: 2px dashed var(--primary); }
+        .sample-img { width: 100px; height: 100px; border: 2px solid var(--primary); border-radius: 12px; margin: 10px auto; display: block; opacity: 0.8; }
+
+        /* LOVE CARDS */
+        .love-cards-container { display: flex; flex-direction: column; gap: 15px; margin-top: 25px; }
+        .love-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: left;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .love-card:hover { transform: scale(1.03); border-color: var(--primary); background: rgba(255, 255, 255, 0.1); }
+        .card-num { font-family: 'Dancing Script', cursive; font-size: 1.8rem; color: var(--primary); min-width: 35px; }
+        .card-text { font-size: 1rem; color: var(--text); font-weight: 500; }
+
+        /* LETTER BOX */
+        .letter-box { background: rgba(255, 77, 109, 0.05); padding: 35px; border-radius: 25px; text-align: left; font-family: 'Dancing Script', cursive; font-size: 1.6rem; border: 1px dashed var(--primary); line-height: 1.5; color: var(--accent); }
+        .gif-img { width: 180px; border-radius: 20px; margin-bottom: 20px; border: 2px solid var(--border); }
+        #changeMindBtn { background: none; border: none; color: var(--secondary); text-decoration: underline; cursor: pointer; margin-top: 15px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- PAGE 1: THE BIG QUESTION -->
+        <div id="page1" class="page active">
+            <img src="https://media.tenor.com/6jaDm2Pv6dUAAAAm/dare-aggie-dare-aggie-bunny.webp" class="gif-img">
+            <h1>Will you be my Valentine?</h1>
+            <p>Hey Nandita charak, every day with you feels like a dream. You're the person I want to annoy for the rest of my life. So, will you make me the luckiest person and say yes? ❤️</p>
+            <div class="btn-wrap">
+                <button id="yesBtn" onclick="goToPage(2)">Yes</button>
+                <button id="noBtn" onclick="handleNoInteraction()">No</button>
+            </div>
+        </div>
+
+        <!-- PAGE 2: SUCCESS -->
+        <div id="page2" class="page">
+            <img src="https://media.tenor.com/5T24_rbk7vYAAAAM/bubu-dudu-kisses.gif" class="gif-img">
+            <h1>Good choice, meri jaan! ✨</h1>
+            <p>Now you are stuck with me forever! There are no refunds, no exchanges, and definitely no escapes. I love you and This not gong to change ever! ❤️</p>
+            <div>
+                <p style="font-size: 0.9rem; color: var(--secondary);">Do u want to change your mind?</p>
+                <button id="changeMindBtn" onclick="goToPage(3)">Yes...</button>
+            </div>
+            <button class="nav-btn" onclick="goToPage(4)">Read my Letter →</button>
+        </div>
+
+        <!-- PAGE 3: TOO LATE -->
+        <div id="page3" class="page">
+            <div style="background: rgba(255, 77, 109, 0.1); border: 2px solid var(--primary); padding: 40px; border-radius: 30px;">
+                <h1>TOO LATE!</h1>
+                <p>The "Stuck With Me Forever" contract has already been signed in heart-ink. No take-backs allowed! 😜</p>
+                <button class="nav-btn" onclick="goToPage(2)">Go Back to Us ❤️</button>
+            </div>
+        </div>
+
+        <!-- PAGE 4: THE LETTER -->
+        <div id="page4" class="page">
+            <h1>To My Dearest...</h1>
+            <div class="letter-box">
+                My Love,<br><br>
+                Thank you for being the most amazing person in my life. You make every ordinary moment feel like a fairy tale. I am so lucky to have you by my side.<br><br>
+                Forever and always, <br>Your BF Mayank ❤️
+            </div>
+            <button class="nav-btn" onclick="goToPage(5)">Our Memories →</button>
+        </div>
+
+        <!-- PAGE 5: 6 MEMORY CARDS -->
+        <div id="page5" class="page">
+            <h1> Look at her 📸</h1>
+            <p>Click to see our special moments!</p>
+            <div class="memory-grid">
+
+                <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-card-inner"><div class="flip-card-front">❤️</div><div class="flip-card-back"><img src="C:\Users\vidus\mayank.web\nandita\2025-07-23_b~EiASFVNablJsanFFd0JSZmtZQWNTd1FNRDIBCEgDUARgAQ.jpg"></div></div></div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-card-inner"><div class="flip-card-front">❤️</div><div class="flip-card-back"><img src="C:\Users\vidus\mayank.web\nandita\2025-09-28_b~EiASFUt4eTd6Zzdwb29IUTNETFVYOGlmSTIBD0gDUARgAQ.jpg"></div></div></div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-card-inner"><div class="flip-card-front">❤️</div><div class="flip-card-back"><img src="C:\Users\vidus\mayank.web\nandita\IMG_20260214_14321504.jpeg"></div></div></div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-card-inner"><div class="flip-card-front">❤️</div><div class="flip-card-back"><img src="C:\Users\vidus\mayank.web\nandita\IMG-20251020-WA0010.jpg"></div></div></div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-card-inner"><div class="flip-card-front">❤️</div><div class="flip-card-back"><img src="C:\Users\vidus\mayank.web\nandita\Picsart_26-02-06_02-27-04-191.png"></div></div></div>
+                <div class="flip-card" onclick="this.classList.toggle('flipped')"><div class="flip-card-inner"><div class="flip-card-front">❤️</div><div class="flip-card-back"><img src="C:\Users\vidus\mayank.web\nandita\Snapchat-2059493723.jpg"></div></div></div>
+            </div>
+            <button class="nav-btn" onclick="goToPage(6)">Play My Puzzle →</button>
+        </div>
+
+        <!-- PAGE 6: PUZZLE -->
+        <div id="page6" class="page">
+            <h1>Fix My Heart 🧩</h1>
+            <p>Slide the pieces to see the full photo!</p>
+            <img src="C:\Users\vidus\mayank.web\nandita\Picsart_26-02-06_02-27-04-191.png" class="sample-img">
+            <div id="puzzle-board"></div>
+            <p id="puzzle-message" style="color: var(--secondary); font-weight: bold; margin-top: 10px;"></p>
+            <button class="nav-btn" onclick="shufflePuzzle()">Shuffle</button>
+            <button class="nav-btn" onclick="goToPage(7)">Why I Love You →</button>
+        </div>
+
+        <!-- PAGE 7: 10 LOVE CARDS -->
+        <div id="page7" class="page">
+            <h1>10 Reasons Why... ❤️</h1>
+            <div class="love-cards-container">
+                <div class="love-card"><span class="card-num">01</span><span class="card-text">You are my safest place in this big world.</span></div>
+                <div class="love-card"><span class="card-num">02</span><span class="card-text">Your smile is literally the best thing I've ever seen.</span></div>
+                <div class="love-card"><span class="card-num">03</span><span class="card-text">How you always know how to make me laugh.</span></div>
+                <div class="love-card"><span class="card-num">04</span><span class="card-text">The way you care about the little details.</span></div>
+                <div class="love-card"><span class="card-num">05</span><span class="card-text">You are the most beautiful person, inside and out.</span></div>
+                <div class="love-card"><span class="card-num">06</span><span class="card-text">How much you support me in everything I do.</span></div>
+                <div class="love-card"><span class="card-num">07</span><span class="card-text">The feeling of your hand holding mine.</span></div>
+                <div class="love-card"><span class="card-num">08</span><span class="card-text">How you make me want to be a better person.</span></div>
+                <div class="love-card"><span class="card-num">09</span><span class="card-text">Your voice is my favorite sound in the world.</span></div>
+                <div class="love-card"><span class="card-num">10</span><span class="card-text">Because life is just better with you in it.</span></div>
+            </div>
+            <button class="nav-btn" onclick="goToPage(8)">Final Surprise →</button>
+        </div>
+
+        <!-- PAGE 8: FINAL SURPRISE -->
+        <div id="page8" class="page">
+            <img src="C:\Users\vidus\mayank.web\nandita\2025-09-28_b~EiASFUt4eTd6Zzdwb29IUTNETFVYOGlmSTIBD0gDUARgAQ.jpg" class="gif-img">
+            <h1>Happy Valentine's Day Baby! ❤️</h1>
+            <p>You mean the world to me. I'm so grateful for every second we spend together. Let's make this day (and every day) special!</p>
+            <button class="nav-btn" style="border-color: #64748b; color: #64748b;" onclick="goToPage(1)">Back to Start</button>
+        </div>
+
+    </div>
+
+    <script>
+        let yesScale = 1;
+        
+        function handleNoInteraction() {
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            yesScale += 0.6;
+            yesBtn.style.transform = `scale(${yesScale})`;
+            const xMove = (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 140 + 70);
+            noBtn.style.transform = `translateX(${xMove}px)`;
+        }
+
+        function goToPage(pageNum) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page' + pageNum).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if(pageNum === 2 || pageNum === 8) {
+                const end = Date.now() + 3000;
+                (function frame() {
+                    confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ff4d6d', '#ffb3c1', '#ffffff'] });
+                    confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ff4d6d', '#ffb3c1', '#ffffff'] });
+                    if (Date.now() < end) requestAnimationFrame(frame);
+                }());
+            }
+            if(pageNum === 6) { initPuzzle(); shufflePuzzle(); }
+        }
+
+        // PUZZLE LOGIC
+        let tiles = [0, 1, 2, 3, 4, 5, 6, 7, 8]; 
+        const boardElement = document.getElementById('puzzle-board');
+
+        function initPuzzle() { tiles = [0, 1, 2, 3, 4, 5, 6, 7, 8]; renderPuzzle(); }
+
+        function renderPuzzle() {
+            boardElement.innerHTML = '';
+            tiles.forEach((tileIndex, position) => {
+                const tile = document.createElement('div');
+                tile.classList.add('puzzle-tile');
+                if (tileIndex === 8) { tile.classList.add('empty'); } 
+                else {
+                    const row = Math.floor(tileIndex / 3);
+                    const col = tileIndex % 3;
+                    tile.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
+                    tile.onclick = () => moveTile(position);
+                }
+                boardElement.appendChild(tile);
+            });
+        }
+
+        function moveTile(pos) {
+            const emptyPos = tiles.indexOf(8);
+            const r = Math.floor(pos/3), c = pos%3, er = Math.floor(emptyPos/3), ec = emptyPos%3;
+            if (Math.abs(r-er) + Math.abs(c-ec) === 1) {
+                [tiles[pos], tiles[emptyPos]] = [tiles[emptyPos], tiles[pos]];
+                renderPuzzle(); checkWin();
+            }
+        }
+
+        function shufflePuzzle() {
+            for (let i = 0; i < 200; i++) {
+                const emptyPos = tiles.indexOf(8);
+                const n = [], r = Math.floor(emptyPos/3), c = emptyPos%3;
+                if (r>0) n.push(emptyPos-3); if (r<2) n.push(emptyPos+3);
+                if (c>0) n.push(emptyPos-1); if (c<2) n.push(emptyPos+1);
+                const m = n[Math.floor(Math.random()*n.length)];
+                [tiles[emptyPos], tiles[m]] = [tiles[m], tiles[emptyPos]];
+            }
+            renderPuzzle();
+        }
+
+        function checkWin() {
+            if (tiles.every((tile, i) => tile === i)) {
+                document.getElementById('puzzle-message').innerText = "Perfect! Just like us! ❤️";
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff4d6d'] });
+            }
+        }
+    </script>
+</body>
+</html>
